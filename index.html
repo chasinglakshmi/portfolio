@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chasing Lakshmi · Portfolio Ledger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(18, 24, 38, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --accent-green: #10b981;
+      --accent-emerald: #059669;
+      --accent-cyan: #38bdf8;
+      --accent-gold: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background gradient glow */
+    .glow-sphere {
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(56, 189, 248, 0.04) 50%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Background Chart canvas container */
+    .chart-background-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 70vh;
+      z-index: 1;
+      opacity: 0.38;
+      pointer-events: none;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 4rem;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #10b981, #06b6d4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: #090d16;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent-green);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* Main Showcase Hero Card */
+    .hero-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-networth {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      line-height: 1.1;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .hero-currency {
+      color: var(--text-muted);
+      font-weight: 400;
+      font-size: 0.7em;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .metric-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .metric-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .metric-val {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .metric-val.green { color: var(--accent-green); }
+    .metric-val.gold { color: var(--accent-gold); }
+    .metric-val.cyan { color: var(--accent-cyan); }
+
+    /* Interactive Chart Card */
+    .interactive-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .card-heading {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .time-selector {
+      display: flex;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.25rem;
+      border-radius: 10px;
+      gap: 0.25rem;
+      border: 1px solid var(--card-border);
+    }
+
+    .time-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .time-btn.active, .time-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 340px;
+      width: 100%;
+    }
+
+    /* Verification Footer */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 2rem;
+      border-top: 1px solid var(--card-border);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    footer a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    footer a:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+    }
+
+    .record-stamp {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-sphere"></div>
+  
+  <!-- Subtle ambient background chart -->
+  <div class="chart-background-wrapper">
+    <canvas id="ambient-chart"></canvas>
+  </div>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">₹</div>
+        <span class="brand-title">Chasing Lakshmi</span>
+      </div>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span id="last-updated-text">Synced Daily · 3:30 PM IST</span>
+      </div>
+    </header>
+
+    <!-- Main Value Card -->
+    <div class="hero-card">
+      <div class="hero-label">Total Portfolio Net Worth</div>
+      <div class="hero-networth">
+        <span class="hero-currency">₹</span>
+        <span id="hero-value">--</span>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-title">Performance (XIRR)</span>
+          <span class="metric-val green" id="hero-xirr">--</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-title">Daily Returns</span>
+          <span class="metric-val gold" id="hero-daily">--</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-title">Verified Entries</span>
+          <span class="metric-val cyan" id="hero-count">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interactive Historical Chart -->
+    <div class="interactive-card">
+      <div class="card-top">
+        <div class="card-heading">Portfolio Growth History</div>
+        <div class="time-selector">
+          <button class="time-btn" onclick="filterRange('1Y')">1Y</button>
+          <button class="time-btn" onclick="filterRange('3Y')">3Y</button>
+          <button class="time-btn" onclick="filterRange('5Y')">5Y</button>
+          <button class="time-btn active" onclick="filterRange('ALL')">ALL</button>
+        </div>
+      </div>
+      <div class="chart-container">
+        <canvas id="main-chart"></canvas>
+      </div>
+    </div>
+
+    <footer>
+      <div>
+        Public ledger verified on <a href="https://github.com/chasinglakshmi/portfolio" target="_blank" rel="noopener">GitHub</a>
+      </div>
+      <div class="record-stamp" id="as-of-date">
+        As of: --
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    let allData = [];
+    let mainChartInstance = null;
+
+    function formatINR(val) {
+      return val.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    async function loadPortfolio() {
+      try {
+        const response = await fetch('./data.json');
+        allData = await response.json();
+
+        if (!allData || allData.length === 0) return;
+
+        const latest = allData[allData.length - 1];
+
+        // Populate DOM elements
+        document.getElementById('hero-value').textContent = formatINR(latest.netWorth);
+        document.getElementById('hero-xirr').textContent = `${latest.xirr.toFixed(2)}%`;
+        
+        const dailySign = latest.dailyReturns >= 0 ? '+' : '';
+        document.getElementById('hero-daily').textContent = `${dailySign}₹ ${formatINR(latest.dailyReturns)}`;
+        document.getElementById('hero-count').textContent = allData.length.toLocaleString('en-IN');
+        document.getElementById('as-of-date').textContent = `Latest Entry: ${latest.date}`;
+
+        renderAmbientChart(allData);
+        renderMainChart(allData);
+      } catch (err) {
+        console.error('Error loading data:', err);
+      }
+    }
+
+    function renderAmbientChart(data) {
+      const ctx = document.getElementById('ambient-chart').getContext('2d');
+      const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+      gradient.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+      gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map(d => d.date),
+          datasets: [{
+            data: data.map(d => d.netWorth),
+            borderColor: '#10b981',
+            borderWidth: 2,
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.3,
+            pointRadius: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: { x: { display: false }, y: { display: false } }
+        }
+      });
+    }
+
+    function renderMainChart(data) {
+      const ctx = document.getElementById('main-chart').getContext('2d');
+      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+      gradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+      gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+      if (mainChartInstance) {
+        mainChartInstance.destroy();
+      }
+
+      mainChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map(d => d.date),
+          datasets: [{
+            label: 'Net Worth (₹)',
+            data: data.map(d => d.netWorth),
+            borderColor: '#10b981',
+            borderWidth: 2,
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.2,
+            pointRadius: 0,
+            pointHitRadius: 10
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index',
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#161b22',
+              borderColor: 'rgba(255,255,255,0.1)',
+              borderWidth: 1,
+              titleFont: { family: 'Plus Jakarta Sans', weight: 'bold' },
+              bodyFont: { family: 'JetBrains Mono' },
+              padding: 12,
+              callbacks: {
+                label: function(context) {
+                  return ' ₹ ' + context.parsed.y.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: {
+                color: '#8b949e',
+                maxTicksLimit: 7,
+                font: { family: 'Plus Jakarta Sans', size: 11 }
+              }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.04)' },
+              ticks: {
+                color: '#8b949e',
+                font: { family: 'JetBrains Mono', size: 11 },
+                callback: function(val) {
+                  if (val >= 10000000) return '₹' + (val / 10000000).toFixed(1) + 'Cr';
+                  if (val >= 100000) return '₹' + (val / 100000).toFixed(1) + 'L';
+                  return '₹' + val.toLocaleString('en-IN');
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function filterRange(range) {
+      document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      if (!allData || allData.length === 0) return;
+
+      if (range === 'ALL') {
+        renderMainChart(allData);
+        return;
+      }
+
+      const latestDate = new Date(allData[allData.length - 1].date);
+      let cutoff = new Date(latestDate);
+
+      if (range === '1Y') cutoff.setFullYear(cutoff.getFullYear() - 1);
+      if (range === '3Y') cutoff.setFullYear(cutoff.getFullYear() - 3);
+      if (range === '5Y') cutoff.setFullYear(cutoff.getFullYear() - 5);
+
+      const cutoffStr = cutoff.toISOString().split('T')[0];
+      const filtered = allData.filter(d => d.date >= cutoffStr);
+      renderMainChart(filtered);
+    }
+
+    window.addEventListener('DOMContentLoaded', loadPortfolio);
+  </script>
+</body>
+</html>
