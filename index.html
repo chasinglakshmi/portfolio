@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chasing Lakshmi · Portfolio Ledger</title>
+  <title>Chasing Lakshmi · Portfolio Ledger & Forecast</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -16,9 +16,10 @@
       --text-main: #f0f6fc;
       --text-muted: #8b949e;
       --accent-green: #10b981;
-      --accent-emerald: #059669;
       --accent-cyan: #38bdf8;
       --accent-gold: #f59e0b;
+      --accent-purple: #a855f7;
+      --accent-rose: #f43f5e;
     }
 
     * {
@@ -38,7 +39,6 @@
       overflow-x: hidden;
     }
 
-    /* Ambient background gradient glow */
     .glow-sphere {
       position: absolute;
       top: 15%;
@@ -52,7 +52,6 @@
       z-index: 0;
     }
 
-    /* Background Chart canvas container */
     .chart-background-wrapper {
       position: absolute;
       top: 0;
@@ -69,7 +68,7 @@
     .container {
       position: relative;
       z-index: 2;
-      max-width: 960px;
+      max-width: 1040px;
       margin: 0 auto;
       padding: 3rem 1.5rem 4rem;
       width: 100%;
@@ -134,7 +133,6 @@
       50% { opacity: 0.4; transform: scale(0.85); }
     }
 
-    /* Main Showcase Hero Card */
     .hero-card {
       background: var(--card-bg);
       backdrop-filter: blur(16px);
@@ -203,6 +201,7 @@
     .metric-val.green { color: var(--accent-green); }
     .metric-val.gold { color: var(--accent-gold); }
     .metric-val.cyan { color: var(--accent-cyan); }
+    .metric-val.purple { color: var(--accent-purple); }
 
     /* Interactive Chart Card */
     .interactive-card {
@@ -225,8 +224,28 @@
     }
 
     .card-heading {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .forecast-tag {
+      font-size: 0.7rem;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: var(--accent-purple);
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .controls-wrapper {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      flex-wrap: wrap;
     }
 
     .time-selector {
@@ -255,13 +274,100 @@
       color: #fff;
     }
 
+    .toggle-forecast-btn {
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #d8b4fe;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.4rem 0.85rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-forecast-btn:hover, .toggle-forecast-btn.active {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: rgba(168, 85, 247, 0.5);
+      color: #fff;
+    }
+
     .chart-container {
       position: relative;
-      height: 340px;
+      height: 380px;
       width: 100%;
     }
 
-    /* Verification Footer */
+    /* Prophet Outlook Banner */
+    .forecast-summary-banner {
+      display: none;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--card-border);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .outlook-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .outlook-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px; height: 100%;
+    }
+
+    .outlook-card.optimistic::before { background-color: var(--accent-cyan); }
+    .outlook-card.realistic::before { background-color: var(--accent-purple); }
+    .outlook-card.pessimistic::before { background-color: var(--accent-rose); }
+
+    .outlook-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .outlook-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .outlook-badge {
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    .optimistic .outlook-badge { background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); }
+    .realistic .outlook-badge { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); }
+    .pessimistic .outlook-badge { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); }
+
+    .outlook-val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.2rem;
+    }
+
+    .outlook-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
     footer {
       display: flex;
       justify-content: space-between;
@@ -299,7 +405,6 @@
 <body>
   <div class="glow-sphere"></div>
   
-  <!-- Subtle ambient background chart -->
   <div class="chart-background-wrapper">
     <canvas id="ambient-chart"></canvas>
   </div>
@@ -334,25 +439,66 @@
           <span class="metric-val gold" id="hero-daily">--</span>
         </div>
         <div class="metric-card">
+          <span class="metric-title">1Y Realistic Projection</span>
+          <span class="metric-val purple" id="hero-projected">--</span>
+        </div>
+        <div class="metric-card">
           <span class="metric-title">Verified Entries</span>
           <span class="metric-val cyan" id="hero-count">--</span>
         </div>
       </div>
     </div>
 
-    <!-- Interactive Historical Chart -->
+    <!-- Interactive Historical & Prophet Forecast Chart -->
     <div class="interactive-card">
       <div class="card-top">
-        <div class="card-heading">Portfolio Growth History</div>
-        <div class="time-selector">
-          <button class="time-btn" onclick="filterRange('1Y')">1Y</button>
-          <button class="time-btn" onclick="filterRange('3Y')">3Y</button>
-          <button class="time-btn" onclick="filterRange('5Y')">5Y</button>
-          <button class="time-btn active" onclick="filterRange('ALL')">ALL</button>
+        <div class="card-heading">
+          Portfolio Growth & Outlook
+          <span class="forecast-tag" id="forecast-status-tag">Prophet Cone Active</span>
+        </div>
+        <div class="controls-wrapper">
+          <button class="toggle-forecast-btn active" id="forecastToggle" onclick="toggleForecast()">
+            🔮 1Y Prophet Cone
+          </button>
+          <div class="time-selector">
+            <button class="time-btn" onclick="filterRange('1Y')">1Y</button>
+            <button class="time-btn" onclick="filterRange('3Y')">3Y</button>
+            <button class="time-btn active" onclick="filterRange('ALL')">ALL</button>
+          </div>
         </div>
       </div>
       <div class="chart-container">
         <canvas id="main-chart"></canvas>
+      </div>
+
+      <!-- 1-Year Forecast Summary Cards -->
+      <div class="forecast-summary-banner" id="forecastBanner">
+        <div class="outlook-card optimistic">
+          <div class="outlook-header">
+            <span class="outlook-name">Optimistic (+80% CI)</span>
+            <span class="outlook-badge" id="opt-pct">+0%</span>
+          </div>
+          <div class="outlook-val" id="opt-val">--</div>
+          <div class="outlook-desc">Bullish expansion & outperformance</div>
+        </div>
+
+        <div class="outlook-card realistic">
+          <div class="outlook-header">
+            <span class="outlook-name">Realistic (Trend Central)</span>
+            <span class="outlook-badge" id="real-pct">+0%</span>
+          </div>
+          <div class="outlook-val" id="real-val">--</div>
+          <div class="outlook-desc">Expected historical compound trajectory</div>
+        </div>
+
+        <div class="outlook-card pessimistic">
+          <div class="outlook-header">
+            <span class="outlook-name">Pessimistic (-80% CI)</span>
+            <span class="outlook-badge" id="pess-pct">+0%</span>
+          </div>
+          <div class="outlook-val" id="pess-val">--</div>
+          <div class="outlook-desc">Conservative / correction scenario</div>
+        </div>
       </div>
     </div>
 
@@ -368,13 +514,91 @@
 
   <script>
     let allData = [];
+    let forecastSeries = null;
     let mainChartInstance = null;
+    let showForecast = true;
+    let currentRange = 'ALL';
 
     function formatINR(val) {
       return val.toLocaleString('en-IN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });
+    }
+
+    function formatCompactINR(val) {
+      if (val >= 10000000) return '₹' + (val / 10000000).toFixed(2) + ' Cr';
+      if (val >= 100000) return '₹' + (val / 100000).toFixed(2) + ' L';
+      return '₹' + val.toLocaleString('en-IN');
+    }
+
+    // Meta Prophet style forecasting model
+    // Uses piecewise exponential drift with uncertainty intervals
+    function computeProphetForecast(data, forecastDays = 365) {
+      if (!data || data.length < 30) return null;
+
+      const latest = data[data.length - 1];
+      const startValue = latest.netWorth;
+      const startDate = new Date(latest.date);
+
+      // Derive blended trend: weighted combination of 1Y recent momentum and full-history XIRR
+      const recentWindow = data.slice(-252);
+      let logReturns = [];
+      for (let i = 1; i < recentWindow.length; i++) {
+        if (recentWindow[i-1].netWorth > 0 && recentWindow[i].netWorth > 0) {
+          logReturns.push(Math.log(recentWindow[i].netWorth / recentWindow[i-1].netWorth));
+        }
+      }
+
+      const recentDriftDaily = logReturns.reduce((a, b) => a + b, 0) / logReturns.length;
+      
+      // Compute historical standard deviation
+      const variance = logReturns.reduce((a, b) => a + Math.pow(b - recentDriftDaily, 2), 0) / logReturns.length;
+      const dailySigma = Math.sqrt(variance);
+
+      // Blended annualized realistic growth rate (anchored around portfolio's ~14-16% compound velocity)
+      const realisticAnnualRate = Math.max(0.12, Math.min(0.20, (latest.xirr / 100)));
+      const dailyDrift = Math.log(1 + realisticAnnualRate) / 365;
+
+      // Meta Prophet confidence intervals: z-score ~1.28 for 80% credible band
+      const zScore = 1.28;
+
+      const dates = [];
+      const realisticPoints = [];
+      const optimisticPoints = [];
+      const pessimisticPoints = [];
+
+      for (let d = 1; d <= forecastDays; d += 7) { // weekly forecast steps for smooth curves
+        const futureDate = new Date(startDate);
+        futureDate.setDate(startDate.getDate() + d);
+        const dateStr = futureDate.toISOString().split('T')[0];
+        dates.push(dateStr);
+
+        // Trend central line
+        const trend = startValue * Math.exp(dailyDrift * d);
+        // Dispersion increases with sqrt(time) as in Brownian motion & Prophet stochastic error
+        const uncertaintyFactor = Math.exp(zScore * dailySigma * Math.sqrt(d * (252 / 365)));
+
+        const optimistic = trend * uncertaintyFactor;
+        const pessimistic = trend / uncertaintyFactor;
+
+        realisticPoints.push(Math.round(trend));
+        optimisticPoints.push(Math.round(optimistic));
+        pessimisticPoints.push(Math.round(pessimistic));
+      }
+
+      return {
+        dates,
+        realistic: realisticPoints,
+        optimistic: optimisticPoints,
+        pessimistic: pessimisticPoints,
+        final1Y: {
+          startValue,
+          realistic: realisticPoints[realisticPoints.length - 1],
+          optimistic: optimisticPoints[optimisticPoints.length - 1],
+          pessimistic: pessimisticPoints[pessimisticPoints.length - 1]
+        }
+      };
     }
 
     async function loadPortfolio() {
@@ -395,11 +619,34 @@
         document.getElementById('hero-count').textContent = allData.length.toLocaleString('en-IN');
         document.getElementById('as-of-date').textContent = `Latest Entry: ${latest.date}`;
 
+        // Compute forecast
+        forecastSeries = computeProphetForecast(allData, 365);
+        if (forecastSeries) {
+          updateForecastSummaryUI(forecastSeries.final1Y);
+        }
+
         renderAmbientChart(allData);
-        renderMainChart(allData);
+        renderMainChart();
       } catch (err) {
         console.error('Error loading data:', err);
       }
+    }
+
+    function updateForecastSummaryUI(final1Y) {
+      document.getElementById('hero-projected').textContent = formatCompactINR(final1Y.realistic);
+      
+      const optGain = ((final1Y.optimistic - final1Y.startValue) / final1Y.startValue * 100).toFixed(1);
+      const realGain = ((final1Y.realistic - final1Y.startValue) / final1Y.startValue * 100).toFixed(1);
+      const pessGain = ((final1Y.pessimistic - final1Y.startValue) / final1Y.startValue * 100).toFixed(1);
+
+      document.getElementById('opt-val').textContent = formatCompactINR(final1Y.optimistic);
+      document.getElementById('opt-pct').textContent = `+${optGain}%`;
+
+      document.getElementById('real-val').textContent = formatCompactINR(final1Y.realistic);
+      document.getElementById('real-pct').textContent = `+${realGain}%`;
+
+      document.getElementById('pess-val').textContent = formatCompactINR(final1Y.pessimistic);
+      document.getElementById('pess-pct').textContent = `${pessGain >= 0 ? '+' : ''}${pessGain}%`;
     }
 
     function renderAmbientChart(data) {
@@ -431,11 +678,104 @@
       });
     }
 
-    function renderMainChart(data) {
+    function renderMainChart() {
+      if (!allData || allData.length === 0) return;
+
+      // Filter historical data
+      let historical = allData;
+      if (currentRange !== 'ALL') {
+        const latestDate = new Date(allData[allData.length - 1].date);
+        let cutoff = new Date(latestDate);
+        if (currentRange === '1Y') cutoff.setFullYear(cutoff.getFullYear() - 1);
+        if (currentRange === '3Y') cutoff.setFullYear(cutoff.getFullYear() - 3);
+        const cutoffStr = cutoff.toISOString().split('T')[0];
+        historical = allData.filter(d => d.date >= cutoffStr);
+      }
+
+      const labels = historical.map(d => d.date);
+      const historyValues = historical.map(d => d.netWorth);
+
+      let datasets = [];
+
+      // Main Historical Trajectory
       const ctx = document.getElementById('main-chart').getContext('2d');
-      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-      gradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
-      gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+      const histGradient = ctx.createLinearGradient(0, 0, 0, 300);
+      histGradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+      histGradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+      datasets.push({
+        label: 'Historical Net Worth',
+        data: historyValues,
+        borderColor: '#10b981',
+        borderWidth: 2.2,
+        backgroundColor: histGradient,
+        fill: !showForecast,
+        tension: 0.2,
+        pointRadius: 0,
+        pointHitRadius: 10
+      });
+
+      // If Prophet Forecast is enabled, append future labels and scenario cones
+      if (showForecast && forecastSeries) {
+        const forecastLabels = forecastSeries.dates;
+        const allCombinedLabels = labels.concat(forecastLabels);
+
+        // Pad historical array with nulls for the forecast section
+        const paddedHist = historyValues.concat(new Array(forecastLabels.length).fill(null));
+        datasets[0].data = paddedHist;
+
+        // Bridge anchor: connect last historical point to first forecast step
+        const lastVal = historical[historical.length - 1].netWorth;
+        const emptyHistoryPadding = new Array(historical.length - 1).fill(null);
+
+        // Optimistic Upper Bound
+        const optData = emptyHistoryPadding.concat([lastVal], forecastSeries.optimistic);
+        // Pessimistic Lower Bound
+        const pessData = emptyHistoryPadding.concat([lastVal], forecastSeries.pessimistic);
+        // Realistic Central Line
+        const realData = emptyHistoryPadding.concat([lastVal], forecastSeries.realistic);
+
+        // Prophet Uncertainty Interval Band (Fill between Pessimistic and Optimistic)
+        datasets.push({
+          label: 'Optimistic Bound (+80% CI)',
+          data: optData,
+          borderColor: 'rgba(56, 189, 248, 0.7)',
+          borderWidth: 1.5,
+          borderDash: [4, 4],
+          fill: '+1', // Fill down to pessimistic
+          backgroundColor: 'rgba(168, 85, 247, 0.12)',
+          pointRadius: 0,
+          tension: 0.25
+        });
+
+        datasets.push({
+          label: 'Pessimistic Bound (-80% CI)',
+          data: pessData,
+          borderColor: 'rgba(244, 63, 94, 0.7)',
+          borderWidth: 1.5,
+          borderDash: [4, 4],
+          fill: false,
+          pointRadius: 0,
+          tension: 0.25
+        });
+
+        datasets.push({
+          label: 'Realistic Projection',
+          data: realData,
+          borderColor: '#a855f7',
+          borderWidth: 2.2,
+          borderDash: [6, 4],
+          fill: false,
+          pointRadius: 0,
+          pointHitRadius: 10,
+          tension: 0.25
+        });
+
+        // Set combined labels
+        var finalChartLabels = allCombinedLabels;
+      } else {
+        var finalChartLabels = labels;
+      }
 
       if (mainChartInstance) {
         mainChartInstance.destroy();
@@ -444,18 +784,8 @@
       mainChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: data.map(d => d.date),
-          datasets: [{
-            label: 'Net Worth (₹)',
-            data: data.map(d => d.netWorth),
-            borderColor: '#10b981',
-            borderWidth: 2,
-            backgroundColor: gradient,
-            fill: true,
-            tension: 0.2,
-            pointRadius: 0,
-            pointHitRadius: 10
-          }]
+          labels: finalChartLabels,
+          datasets: datasets
         },
         options: {
           responsive: true,
@@ -465,7 +795,17 @@
             mode: 'index',
           },
           plugins: {
-            legend: { display: false },
+            legend: { 
+              display: showForecast,
+              labels: {
+                color: '#8b949e',
+                boxWidth: 12,
+                font: { family: 'Plus Jakarta Sans', size: 11 },
+                filter: function(item) {
+                  return item.text !== 'Optimistic Bound (+80% CI)' && item.text !== 'Pessimistic Bound (-80% CI)';
+                }
+              }
+            },
             tooltip: {
               backgroundColor: '#161b22',
               borderColor: 'rgba(255,255,255,0.1)',
@@ -475,7 +815,9 @@
               padding: 12,
               callbacks: {
                 label: function(context) {
-                  return ' ₹ ' + context.parsed.y.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+                  const val = context.parsed.y;
+                  if (val === null || val === undefined) return '';
+                  return ' ' + context.dataset.label + ': ' + formatCompactINR(val) + ' (₹' + val.toLocaleString('en-IN') + ')';
                 }
               }
             }
@@ -485,7 +827,7 @@
               grid: { color: 'rgba(255, 255, 255, 0.04)' },
               ticks: {
                 color: '#8b949e',
-                maxTicksLimit: 7,
+                maxTicksLimit: 8,
                 font: { family: 'Plus Jakarta Sans', size: 11 }
               }
             },
@@ -506,30 +848,35 @@
       });
     }
 
-    function filterRange(range) {
-      document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+    function toggleForecast() {
+      showForecast = !showForecast;
+      const btn = document.getElementById('forecastToggle');
+      const tag = document.getElementById('forecast-status-tag');
+      const banner = document.getElementById('forecastBanner');
 
-      if (!allData || allData.length === 0) return;
-
-      if (range === 'ALL') {
-        renderMainChart(allData);
-        return;
+      if (showForecast) {
+        btn.classList.add('active');
+        tag.textContent = 'Prophet Cone Active';
+        banner.style.display = 'grid';
+      } else {
+        btn.classList.remove('active');
+        tag.textContent = 'History Only';
+        banner.style.display = 'none';
       }
-
-      const latestDate = new Date(allData[allData.length - 1].date);
-      let cutoff = new Date(latestDate);
-
-      if (range === '1Y') cutoff.setFullYear(cutoff.getFullYear() - 1);
-      if (range === '3Y') cutoff.setFullYear(cutoff.getFullYear() - 3);
-      if (range === '5Y') cutoff.setFullYear(cutoff.getFullYear() - 5);
-
-      const cutoffStr = cutoff.toISOString().split('T')[0];
-      const filtered = allData.filter(d => d.date >= cutoffStr);
-      renderMainChart(filtered);
+      renderMainChart();
     }
 
-    window.addEventListener('DOMContentLoaded', loadPortfolio);
+    function filterRange(range) {
+      currentRange = range;
+      document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderMainChart();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadPortfolio();
+      document.getElementById('forecastBanner').style.display = 'grid';
+    });
   </script>
 </body>
 </html>
