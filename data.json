@@ -16006,5 +16006,11 @@
     "netWorth": 196597591.74,
     "xirr": 11.71,
     "dailyReturns": 63018.3
+  },
+  {
+    "date": "2026-11-25",
+    "netWorth": 193348753.89,
+    "xirr": 11.13,
+    "dailyReturns": 58898.18
   }
 ]
